@@ -2,12 +2,12 @@
 [![Build Status](https://img.shields.io/travis/com/SananGuliyev/sqlparser.svg)](https://travis-ci.com/SananGuliyev/sqlparser) 
 [![Codecov](https://img.shields.io/codecov/c/gh/SananGuliyev/sqlparser)](https://codecov.io/gh/SananGuliyev/sqlparser)
 [![Go Report Card](https://goreportcard.com/badge/github.com/SananGuliyev/sqlparser)](https://goreportcard.com/report/github.com/SananGuliyev/sqlparser)
-[![GoDoc](https://godoc.org/github.com/SananGuliyev/sqlparser?status.svg)](https://godoc.org/github.com/SananGuliyev/sqlparser)
+[![GoDoc](https://godoc.org/github.com/SananGuliyev/sqlparser?status.svg)](https://pkg.go.dev/github.com/SananGuliyev/sqlparser)
 
-Go package for parsing MySQL, SQL queries.
+Go package for parsing ANSI SQL queries
 
 ## Why
-SANANGULIYEV/sqlparser is famous sql parser in Golang. After I asked a question I noticed that it's not actively supported and decided to continue the project. 
+`xwb1989/sqlparser` is famous sql parser in Golang. After I asked a question regarding PrestoSQL query support I noticed that it's not actively supported and decided to fork and continue active development. 
 
 P.S. In case you have specific needs which is in ANSI SQL but not supported by this library feel free open issue, and I will try to add it asap.
 
