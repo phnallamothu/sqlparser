@@ -1,4 +1,4 @@
-# sqlparser 
+# SQL Parser 
 [![Build Status](https://img.shields.io/travis/com/SananGuliyev/sqlparser.svg)](https://travis-ci.com/SananGuliyev/sqlparser) 
 [![Codecov](https://img.shields.io/codecov/c/gh/SananGuliyev/sqlparser)](https://codecov.io/gh/SananGuliyev/sqlparser)
 [![Go Report Card](https://goreportcard.com/badge/github.com/SananGuliyev/sqlparser)](https://goreportcard.com/report/github.com/SananGuliyev/sqlparser)
@@ -13,10 +13,10 @@ P.S. In case you have specific needs which is in ANSI SQL but not supported by t
 
 ## Notice
 
-The backbone of this repo is extracted from [vitessio/vitess](https://github.com/vitessio/vitess).
+The backbone of this repository is extracted from [vitessio/vitess](https://github.com/vitessio/vitess).
 
-Inside vitessio/vitess there is a very nicely written sql parser. However as it's not a self-contained application, I created this one.
-It applies the same LICENSE as vitessio/vitess.
+Inside `vitessio/vitess` there is a very nicely written sql parser. However, as it's not a self-contained application, I created this one.
+It applies the same LICENSE as `vitessio/vitess`.
 
 ## Usage
 
@@ -73,7 +73,7 @@ See [parse_test.go](https://github.com/SananGuliyev/sqlparser/blob/master/parse_
 
 ## Porting Instructions
 
-You only need the below if you plan to try and keep this library up to date with [vitessio/vitess](https://github.com/vitessio/vitess).
+You only need the below if you plan to try to keep this library up to date with [vitessio/vitess](https://github.com/vitessio/vitess).
 
 ### Keeping up to date
 
