@@ -1,6 +1,15 @@
-# sqlparser [![Build Status](https://img.shields.io/travis/xwb1989/sqlparser.svg)](https://travis-ci.org/xwb1989/sqlparser) [![Coverage](https://img.shields.io/coveralls/xwb1989/sqlparser.svg)](https://coveralls.io/github/xwb1989/sqlparser) [![Report card](https://goreportcard.com/badge/github.com/xwb1989/sqlparser)](https://goreportcard.com/report/github.com/xwb1989/sqlparser) [![GoDoc](https://godoc.org/github.com/xwb1989/sqlparser?status.svg)](https://godoc.org/github.com/xwb1989/sqlparser)
+# sqlparser 
+[![Build Status](https://img.shields.io/travis/SananGuliyev/sqlparser.svg)](https://travis-ci.org/SANANGULIYEV/sqlparser) 
+[![Coverage](https://img.shields.io/coveralls/SananGuliyev/sqlparser.svg)](https://coveralls.io/github/SANANGULIYEV/sqlparser) 
+[![Report card](https://goreportcard.com/badge/github.com/SananGuliyev/sqlparser)](https://goreportcard.com/report/github.com/SananGuliyev/sqlparser) 
+[![GoDoc](https://godoc.org/github.com/SananGuliyev/sqlparser?status.svg)](https://godoc.org/github.com/SananGuliyev/sqlparser)
 
-Go package for parsing MySQL SQL queries.
+Go package for parsing MySQL, SQL queries.
+
+## Why
+SANANGULIYEV/sqlparser is famous sql parser in Golang. After I asked a question I noticed that it's not actively supported and decided to continue the project. 
+
+P.S. In case you have specific needs which is in ANSI SQL but not supported by this library feel free open issue, and I will try to add it asap.
 
 ## Notice
 
@@ -12,44 +21,54 @@ It applies the same LICENSE as vitessio/vitess.
 ## Usage
 
 ```go
+package main
+
 import (
-    "github.com/xwb1989/sqlparser"
+    "github.com/SananGuliyev/sqlparser"
 )
-```
 
-Then use:
-
-```go
-sql := "SELECT * FROM table WHERE a = 'abc'"
-stmt, err := sqlparser.Parse(sql)
-if err != nil {
-	// Do something with the err
-}
-
-// Otherwise do something with stmt
-switch stmt := stmt.(type) {
-case *sqlparser.Select:
-	_ = stmt
-case *sqlparser.Insert:
+func main() {
+    sql := "SELECT * FROM table WHERE a = 'abc'"
+    stmt, err := sqlparser.Parse(sql)
+    if err != nil {
+    	// Do something with the err
+    }
+    
+    // Otherwise do something with stmt
+    switch stmt := stmt.(type) {
+    case *sqlparser.Select:
+    	_ = stmt
+    case *sqlparser.Insert:
+    }
 }
 ```
 
 Alternative to read many queries from a io.Reader:
 
 ```go
-r := strings.NewReader("INSERT INTO table1 VALUES (1, 'a'); INSERT INTO table2 VALUES (3, 4);")
+package main
 
-tokens := sqlparser.NewTokenizer(r)
-for {
-	stmt, err := sqlparser.ParseNext(tokens)
-	if err == io.EOF {
-		break
-	}
-	// Do something with stmt or err.
+import (
+    "github.com/SananGuliyev/sqlparser"
+    "io"
+    "strings"
+)
+
+func main() {
+    r := strings.NewReader("INSERT INTO table1 VALUES (1, 'a'); INSERT INTO table2 VALUES (3, 4);")
+    
+    tokens := sqlparser.NewTokenizer(r)
+    for {
+        stmt, err := sqlparser.ParseNext(tokens)
+        if err == io.EOF {
+            break
+        }
+        // Do something with stmt or err.
+    }
 }
 ```
 
-See [parse_test.go](https://github.com/xwb1989/sqlparser/blob/master/parse_test.go) for more examples, or read the [godoc](https://godoc.org/github.com/xwb1989/sqlparser).
+See [parse_test.go](https://github.com/SananGuliyev/sqlparser/blob/master/parse_test.go) for more examples, or read the [godoc](https://godoc.org/github.com/SananGuliyev/sqlparser).
 
 
 ## Porting Instructions
@@ -61,7 +80,7 @@ You only need the below if you plan to try and keep this library up to date with
 ```bash
 shopt -s nullglob
 VITESS=${GOPATH?}/src/vitess.io/vitess/go/
-XWB1989=${GOPATH?}/src/github.com/xwb1989/sqlparser/
+SANANGULIYEV=${GOPATH?}/src/github.com/SananGuliyev/sqlparser/
 
 # Create patches for everything that changed
 LASTIMPORT=1b7879cb91f1dfe1a2dfa06fea96e951e3a7aec5
@@ -71,11 +90,11 @@ for path in ${VITESS?}/{vt/sqlparser,sqltypes,bytes2,hack}; do
 done;
 
 # Apply patches to the dependencies
-cd ${XWB1989?}
+cd ${SANANGULIYEV?}
 git am --directory dependency -p2 ${VITESS?}/{sqltypes,bytes2,hack}/*.patch
 
 # Apply the main patches to the repo
-cd ${XWB1989?}
+cd ${SANANGULIYEV?}
 git am -p4 ${VITESS?}/vt/sqlparser/*.patch
 
 # If you encounter diff failures, manually fix them with
@@ -96,9 +115,9 @@ TODO: Change these instructions to use git to copy the files, that'll make later
 
 ```bash
 VITESS=${GOPATH?}/src/vitess.io/vitess/go/
-XWB1989=${GOPATH?}/src/github.com/xwb1989/sqlparser/
+SANANGULIYEV=${GOPATH?}/src/github.com/SananGuliyev/sqlparser/
 
-cd ${XWB1989?}
+cd ${SANANGULIYEV?}
 
 # Copy all the code
 cp -pr ${VITESS?}/vt/sqlparser/ .
@@ -112,8 +131,8 @@ rm dependency/sqltypes/arithmetic.go dependency/sqltypes/arithmetic_test.go depe
 # Some automated fixes
 
 # Fix imports
-sed -i '.bak' 's_vitess.io/vitess/go/vt/proto/query_github.com/xwb1989/sqlparser/dependency/querypb_g' *.go dependency/sqltypes/*.go
-sed -i '.bak' 's_vitess.io/vitess/go/_github.com/xwb1989/sqlparser/dependency/_g' *.go dependency/sqltypes/*.go
+sed -i '.bak' 's_vitess.io/vitess/go/vt/proto/query_github.com/SananGuliyev/sqlparser/dependency/querypb_g' *.go dependency/sqltypes/*.go
+sed -i '.bak' 's_vitess.io/vitess/go/_github.com/SananGuliyev/sqlparser/dependency/_g' *.go dependency/sqltypes/*.go
 
 # Copy the proto, but basically drop everything we don't want
 cp -pr ${VITESS?}/vt/proto/query dependency/querypb
@@ -135,16 +154,16 @@ sed -i '.bak' 's/vterrors.New([^,]*, /errors.New(/g' *.go dependency/sqltypes/*.
 
 ```bash
 VITESS=${GOPATH?}/src/vitess.io/vitess/go/
-XWB1989=${GOPATH?}/src/github.com/xwb1989/sqlparser/
+SANANGULIYEV=${GOPATH?}/src/github.com/SananGuliyev/sqlparser/
 
-cd ${XWB1989?}
+cd ${SANANGULIYEV?}
 
 # Test, fix and repeat
 go test ./...
 
 # Finally make some diffs (for later reference)
-diff -u ${VITESS?}/sqltypes/        ${XWB1989?}/dependency/sqltypes/ > ${XWB1989?}/patches/sqltypes.patch
-diff -u ${VITESS?}/bytes2/          ${XWB1989?}/dependency/bytes2/   > ${XWB1989?}/patches/bytes2.patch
-diff -u ${VITESS?}/vt/proto/query/  ${XWB1989?}/dependency/querypb/  > ${XWB1989?}/patches/querypb.patch
-diff -u ${VITESS?}/vt/sqlparser/    ${XWB1989?}/                     > ${XWB1989?}/patches/sqlparser.patch
+diff -u ${VITESS?}/sqltypes/        ${SANANGULIYEV?}/dependency/sqltypes/ > ${SANANGULIYEV?}/patches/sqltypes.patch
+diff -u ${VITESS?}/bytes2/          ${SANANGULIYEV?}/dependency/bytes2/   > ${SANANGULIYEV?}/patches/bytes2.patch
+diff -u ${VITESS?}/vt/proto/query/  ${SANANGULIYEV?}/dependency/querypb/  > ${SANANGULIYEV?}/patches/querypb.patch
+diff -u ${VITESS?}/vt/sqlparser/    ${SANANGULIYEV?}/                     > ${SANANGULIYEV?}/patches/sqlparser.patch
 ```
