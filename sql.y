@@ -175,7 +175,7 @@ func forceEOF(yylex interface{}) {
 %token <bytes> NULLX AUTO_INCREMENT APPROXNUM SIGNED UNSIGNED ZEROFILL
 
 // Supported SHOW tokens
-%token <bytes> DATABASES TABLES VITESS_KEYSPACES VITESS_SHARDS VITESS_TABLETS VSCHEMA_TABLES EXTENDED FULL PROCESSLIST
+%token <bytes> DATABASES SCHEMAS TABLES VITESS_KEYSPACES VITESS_SHARDS VITESS_TABLETS VSCHEMA_TABLES EXTENDED FULL PROCESSLIST
 
 // SET tokens
 %token <bytes> NAMES CHARSET GLOBAL SESSION ISOLATION LEVEL READ WRITE ONLY REPEATABLE COMMITTED UNCOMMITTED SERIALIZABLE
@@ -200,7 +200,7 @@ func forceEOF(yylex interface{}) {
 %type <statement> stream_statement insert_statement update_statement delete_statement set_statement
 %type <statement> create_statement alter_statement rename_statement drop_statement truncate_statement
 %type <ddl> create_table_prefix
-%type <statement> analyze_statement show_statement use_statement other_statement
+%type <statement> analyze_statement show_statement describe_statement use_statement other_statement
 %type <statement> begin_statement commit_statement rollback_statement
 %type <bytes2> comment_opt comment_list
 %type <str> union_op insert_or_replace
@@ -259,7 +259,7 @@ func forceEOF(yylex interface{}) {
 %type <bytes> reserved_keyword non_reserved_keyword
 %type <colIdent> sql_id reserved_sql_id col_alias as_ci_opt using_opt
 %type <expr> charset_value
-%type <tableIdent> table_id reserved_table_id table_alias as_opt_id
+%type <tableIdent> table_id table_alias as_opt_id
 %type <empty> as_opt
 %type <empty> force_eof ddl_force_eof
 %type <str> charset
@@ -324,6 +324,7 @@ command:
 | truncate_statement
 | analyze_statement
 | show_statement
+| describe_statement
 | use_statement
 | begin_statement
 | commit_statement
@@ -1351,6 +1352,10 @@ show_statement:
   {
     $$ = &Show{Type: string($2)}
   }
+| SHOW SCHEMAS ddl_force_eof
+  {
+    $$ = &Show{Type: string($2)}
+  }
 | SHOW INDEX ddl_force_eof
   {
     $$ = &Show{Type: string($2)}
@@ -1418,6 +1423,12 @@ show_statement:
 | SHOW ID ddl_force_eof
   {
     $$ = &Show{Type: string($2)}
+  }
+
+describe_statement:
+  DESCRIBE table_name
+  {
+    $$ = &Describe{Table: $2}
   }
 
 tables_or_processlist:
@@ -1526,10 +1537,6 @@ rollback_statement:
 
 other_statement:
   DESC force_eof
-  {
-    $$ = &OtherRead{}
-  }
-| DESCRIBE force_eof
   {
     $$ = &OtherRead{}
   }
@@ -1642,7 +1649,7 @@ select_expression:
   {
     $$ = &StarExpr{TableName: TableName{Name: $1}}
   }
-| table_id '.' reserved_table_id '.' '*'
+| table_id '.' table_id '.' '*'
   {
     $$ = &StarExpr{TableName: TableName{Qualifier: $1, Name: $3}}
   }
@@ -1869,9 +1876,13 @@ table_name:
   {
     $$ = TableName{Name: $1}
   }
-| table_id '.' reserved_table_id
+| table_id '.' table_id
   {
     $$ = TableName{Qualifier: $1, Name: $3}
+  }
+| table_id '.' table_id '.' table_id
+  {
+    $$ = TableName{Catalog: $1, Qualifier: $3, Name: $5}
   }
 
 index_hint_list:
@@ -2507,13 +2518,17 @@ column_name:
   {
     $$ = &ColName{Name: $1}
   }
-| table_id '.' reserved_sql_id
+| table_id '.' sql_id
   {
     $$ = &ColName{Qualifier: TableName{Name: $1}, Name: $3}
   }
-| table_id '.' reserved_table_id '.' reserved_sql_id
+| table_id '.' table_id '.' sql_id
   {
     $$ = &ColName{Qualifier: TableName{Qualifier: $1, Name: $3}, Name: $5}
+  }
+| table_id '.' table_id '.' table_id '.' sql_id
+  {
+    $$ = &ColName{Qualifier: TableName{Catalog: $1, Qualifier: $3, Name: $5}, Name: $7}
   }
 
 value:
@@ -2908,13 +2923,6 @@ table_id:
     $$ = NewTableIdent(string($1))
   }
 
-reserved_table_id:
-  table_id
-| reserved_keyword
-  {
-    $$ = NewTableIdent(string($1))
-  }
-
 /*
   These are not all necessarily reserved in MySQL, but some are.
 
@@ -2996,6 +3004,7 @@ reserved_keyword:
 | REPLACE
 | RIGHT
 | SCHEMA
+| SCHEMAS
 | SELECT
 | SEPARATOR
 | SET

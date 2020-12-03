@@ -217,6 +217,7 @@ func (*Set) iStatement()        {}
 func (*DBDDL) iStatement()      {}
 func (*DDL) iStatement()        {}
 func (*Show) iStatement()       {}
+func (*Describe) iStatement()   {}
 func (*Use) iStatement()        {}
 func (*Begin) iStatement()      {}
 func (*Commit) iStatement()     {}
@@ -1348,6 +1349,28 @@ func (node *ShowFilter) walkSubtree(visit Visit) error {
 	return nil
 }
 
+// Describe represents a show statement.
+type Describe struct {
+	Table TableName
+}
+
+// Format formats the node.
+func (node *Describe) Format(buf *TrackedBuffer) {
+	buf.Myprintf("describe")
+	if node.HasOnTable() {
+		buf.Myprintf(" %v", node.Table)
+	}
+}
+
+// HasOnTable returns true if the show statement has an "on" clause
+func (node *Describe) HasOnTable() bool {
+	return node.Table.Name.v != ""
+}
+
+func (node *Describe) walkSubtree(visit Visit) error {
+	return nil
+}
+
 // Use represents a use statement.
 type Use struct {
 	DBName TableIdent
@@ -1703,11 +1726,12 @@ func (node TableNames) walkSubtree(visit Visit) error {
 
 // TableName represents a table  name.
 // Qualifier, if specified, represents a database or keyspace.
+// Catalog, if specified, represents a catalog (e.g. hive).
 // TableName is a value struct whose fields are case sensitive.
 // This means two TableName vars can be compared for equality
 // and a TableName can also be used as key in a map.
 type TableName struct {
-	Name, Qualifier TableIdent
+	Name, Qualifier, Catalog TableIdent
 }
 
 // Format formats the node.
