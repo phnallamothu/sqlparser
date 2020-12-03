@@ -1,6 +1,6 @@
 # sqlparser 
-[![Build Status](https://img.shields.io/travis/SananGuliyev/sqlparser.svg)](https://travis-ci.org/SANANGULIYEV/sqlparser) 
-[![Coverage](https://img.shields.io/coveralls/SananGuliyev/sqlparser.svg)](https://coveralls.io/github/SANANGULIYEV/sqlparser) 
+[![Build Status](https://img.shields.io/travis/SananGuliyev/sqlparser.svg)](https://travis-ci.org/SananGuliyev/sqlparser) 
+![Codecov](https://img.shields.io/codecov/c/gh/SananGuliyev/sqlparser)
 [![Report card](https://goreportcard.com/badge/github.com/SananGuliyev/sqlparser)](https://goreportcard.com/report/github.com/SananGuliyev/sqlparser) 
 [![GoDoc](https://godoc.org/github.com/SananGuliyev/sqlparser?status.svg)](https://godoc.org/github.com/SananGuliyev/sqlparser)
 

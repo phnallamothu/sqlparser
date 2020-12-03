@@ -259,7 +259,7 @@ func forceEOF(yylex interface{}) {
 %type <bytes> reserved_keyword non_reserved_keyword
 %type <colIdent> sql_id reserved_sql_id col_alias as_ci_opt using_opt
 %type <expr> charset_value
-%type <tableIdent> table_id table_alias as_opt_id
+%type <tableIdent> table_id reserved_table_id table_alias as_opt_id
 %type <empty> as_opt
 %type <empty> force_eof ddl_force_eof
 %type <str> charset
@@ -1649,7 +1649,7 @@ select_expression:
   {
     $$ = &StarExpr{TableName: TableName{Name: $1}}
   }
-| table_id '.' table_id '.' '*'
+| table_id '.' reserved_table_id '.' '*'
   {
     $$ = &StarExpr{TableName: TableName{Qualifier: $1, Name: $3}}
   }
@@ -1876,11 +1876,11 @@ table_name:
   {
     $$ = TableName{Name: $1}
   }
-| table_id '.' table_id
+| table_id '.' reserved_table_id
   {
     $$ = TableName{Qualifier: $1, Name: $3}
   }
-| table_id '.' table_id '.' table_id
+| table_id '.' reserved_table_id '.' reserved_table_id
   {
     $$ = TableName{Catalog: $1, Qualifier: $3, Name: $5}
   }
@@ -2518,15 +2518,15 @@ column_name:
   {
     $$ = &ColName{Name: $1}
   }
-| table_id '.' sql_id
+| table_id '.' reserved_sql_id
   {
     $$ = &ColName{Qualifier: TableName{Name: $1}, Name: $3}
   }
-| table_id '.' table_id '.' sql_id
+| table_id '.' reserved_table_id '.' reserved_sql_id
   {
     $$ = &ColName{Qualifier: TableName{Qualifier: $1, Name: $3}, Name: $5}
   }
-| table_id '.' table_id '.' table_id '.' sql_id
+| table_id '.' reserved_table_id '.' reserved_table_id '.' reserved_sql_id
   {
     $$ = &ColName{Qualifier: TableName{Catalog: $1, Qualifier: $3, Name: $5}, Name: $7}
   }
@@ -2919,6 +2919,13 @@ table_id:
     $$ = NewTableIdent(string($1))
   }
 | non_reserved_keyword
+  {
+    $$ = NewTableIdent(string($1))
+  }
+
+reserved_table_id:
+  table_id
+| reserved_keyword
   {
     $$ = NewTableIdent(string($1))
   }
