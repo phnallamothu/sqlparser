@@ -1,1 +1,4 @@
 y.output
+/.idea
+/vendor
+.DS_Store
