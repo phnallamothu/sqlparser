@@ -1,7 +1,7 @@
 # sqlparser 
 [![Build Status](https://img.shields.io/travis/com/SananGuliyev/sqlparser.svg)](https://travis-ci.com/SananGuliyev/sqlparser) 
 [![Codecov](https://img.shields.io/codecov/c/gh/SananGuliyev/sqlparser)](https://codecov.io/gh/SananGuliyev/sqlparser)
-[![Report card](https://goreportcard.com/badge/github.com/SananGuliyev/sqlparser)](https://goreportcard.com/report/github.com/SananGuliyev/sqlparser) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/SananGuliyev/sqlparser)](https://goreportcard.com/report/github.com/SananGuliyev/sqlparser)
 [![GoDoc](https://godoc.org/github.com/SananGuliyev/sqlparser?status.svg)](https://godoc.org/github.com/SananGuliyev/sqlparser)
 
 Go package for parsing MySQL, SQL queries.
