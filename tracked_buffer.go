@@ -68,7 +68,7 @@ func (buf *TrackedBuffer) Myprintf(format string, values ...interface{}) {
 			i++
 		}
 		if i > lasti {
-			buf.WriteString(format[lasti:i])
+			_, _ = buf.WriteString(format[lasti:i])
 		}
 		if i >= end {
 			break
@@ -78,18 +78,18 @@ func (buf *TrackedBuffer) Myprintf(format string, values ...interface{}) {
 		case 'c':
 			switch v := values[fieldnum].(type) {
 			case byte:
-				buf.WriteByte(v)
+				_ = buf.WriteByte(v)
 			case rune:
-				buf.WriteRune(v)
+				_, _ = buf.WriteRune(v)
 			default:
 				panic(fmt.Sprintf("unexpected TrackedBuffer type %T", v))
 			}
 		case 's':
 			switch v := values[fieldnum].(type) {
 			case []byte:
-				buf.Write(v)
+				_, _ = buf.Write(v)
 			case string:
-				buf.WriteString(v)
+				_, _ = buf.WriteString(v)
 			default:
 				panic(fmt.Sprintf("unexpected TrackedBuffer type %T", v))
 			}
@@ -118,7 +118,7 @@ func (buf *TrackedBuffer) WriteArg(arg string) {
 		offset: buf.Len(),
 		length: len(arg),
 	})
-	buf.WriteString(arg)
+	_, _ = buf.WriteString(arg)
 }
 
 // ParsedQuery returns a ParsedQuery that contains bind

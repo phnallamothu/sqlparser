@@ -44,6 +44,7 @@ type Tokenizer struct {
 	posVarIndex    int
 	ParseTree      Statement
 	partialDDL     *DDL
+	sqlMode        int
 	nesting        int
 	multi          bool
 	specialComment *Tokenizer
@@ -55,11 +56,12 @@ type Tokenizer struct {
 
 // NewStringTokenizer creates a new Tokenizer for the
 // sql string.
-func NewStringTokenizer(sql string) *Tokenizer {
+func NewStringTokenizer(sql string, sqlMode int) *Tokenizer {
 	buf := []byte(sql)
 	return &Tokenizer{
 		buf:     buf,
 		bufSize: len(buf),
+		sqlMode: sqlMode,
 	}
 }
 
@@ -595,7 +597,12 @@ func (tkn *Tokenizer) Scan() (int, []byte) {
 				return NE, nil
 			}
 			return int(ch), nil
-		case '\'', '"':
+		case '\'':
+			return tkn.scanString(ch, STRING)
+		case '"':
+			if tkn.sqlMode == SQLModeANSIQuotes {
+				return tkn.scanLiteralIdentifier()
+			}
 			return tkn.scanString(ch, STRING)
 		case '`':
 			return tkn.scanLiteralIdentifier()
@@ -667,13 +674,23 @@ func (tkn *Tokenizer) scanBitLiteral() (int, []byte) {
 func (tkn *Tokenizer) scanLiteralIdentifier() (int, []byte) {
 	buffer := &bytes2.Buffer{}
 	backTickSeen := false
+	quoteSeen := false
 	for {
 		if backTickSeen {
 			if tkn.lastChar != '`' {
 				break
 			}
 			backTickSeen = false
-			buffer.WriteByte('`')
+			_ = buffer.WriteByte('`')
+			tkn.next()
+			continue
+		}
+		if quoteSeen {
+			if tkn.lastChar != '"' {
+				break
+			}
+			quoteSeen = false
+			_ = buffer.WriteByte('"')
 			tkn.next()
 			continue
 		}
@@ -681,11 +698,17 @@ func (tkn *Tokenizer) scanLiteralIdentifier() (int, []byte) {
 		switch tkn.lastChar {
 		case '`':
 			backTickSeen = true
+		case '"':
+			if tkn.sqlMode == SQLModeANSIQuotes {
+				quoteSeen = true
+			} else {
+				_ = buffer.WriteByte(byte(tkn.lastChar))
+			}
 		case eofChar:
 			// Premature EOF.
 			return LEX_ERROR, buffer.Bytes()
 		default:
-			buffer.WriteByte(byte(tkn.lastChar))
+			_ = buffer.WriteByte(byte(tkn.lastChar))
 		}
 		tkn.next()
 	}
@@ -880,7 +903,7 @@ func (tkn *Tokenizer) scanMySQLSpecificComment() (int, []byte) {
 		tkn.consumeNext(buffer)
 	}
 	_, sql := ExtractMysqlComment(buffer.String())
-	tkn.specialComment = NewStringTokenizer(sql)
+	tkn.specialComment = NewStringTokenizer(sql, SQLMode)
 	return tkn.Scan()
 }
 

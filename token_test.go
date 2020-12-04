@@ -57,7 +57,7 @@ func TestLiteralID(t *testing.T) {
 	}}
 
 	for _, tcase := range testcases {
-		tkn := NewStringTokenizer(tcase.in)
+		tkn := NewStringTokenizer(tcase.in, SQLMode)
 		id, out := tkn.Scan()
 		if tcase.id != id || string(out) != tcase.out {
 			t.Errorf("Scan(%s): %d, %s, want %d, %s", tcase.in, id, out, tcase.id, tcase.out)
@@ -130,7 +130,7 @@ func TestString(t *testing.T) {
 	}}
 
 	for _, tcase := range testcases {
-		id, got := NewStringTokenizer(tcase.in).Scan()
+		id, got := NewStringTokenizer(tcase.in, SQLMode).Scan()
 		if tcase.id != id || string(got) != tcase.want {
 			t.Errorf("Scan(%q) = (%s, %q), want (%s, %q)", tcase.in, tokenName(id), got, tokenName(tcase.id), tcase.want)
 		}
@@ -188,4 +188,32 @@ func TestSplitStatement(t *testing.T) {
 			t.Errorf("EndOfStatementPosition(%s) got remainder \"%s\" want \"%s\"", tcase.in, rem, tcase.rem)
 		}
 	}
+}
+
+func TestParseANSIQuotesMode(t *testing.T) {
+	testcases := []struct {
+		in  string
+		out string
+	}{{
+		in:  `select * from "table"`,
+		out: `select * from "table"`,
+	}, {
+		in:  `select * from "tbl"`,
+		out: `select * from tbl`,
+	}}
+
+	SQLMode = SQLModeANSIQuotes
+	for _, tcase := range testcases {
+		stmt, err := Parse(tcase.in)
+		if err != nil {
+			t.Errorf("EndOfStatementPosition(%s): ERROR: %v", tcase.in, err)
+			continue
+		}
+
+		finalSQL := String(stmt)
+		if tcase.out != finalSQL {
+			t.Errorf("EndOfStatementPosition(%s) got sql \"%s\" want \"%s\"", tcase.in, finalSQL, tcase.out)
+		}
+	}
+	SQLMode = SQLModeStandard
 }

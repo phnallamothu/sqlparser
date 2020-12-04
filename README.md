@@ -68,6 +68,34 @@ func main() {
 }
 ```
 
+Parsing SQL mode `ANSI_QUOTES`:
+
+Treat `"` as an identifier quote character (like the \` quote character) and not as a string quote character. You can still use \` to quote identifiers with this mode enabled. With `ANSI_QUOTES` enabled, you cannot use double quotation marks to quote literal strings because they are interpreted as identifiers.
+
+```go
+package main
+
+import (
+    "github.com/SananGuliyev/sqlparser"
+)
+
+func main() {
+    sql := "SELECT * FROM table WHERE a = 'abc'"
+    sqlparser.SQLMode = sqlparser.SQLModeANSIQuotes
+    stmt, err := sqlparser.Parse(sql)
+    if err != nil {
+    	// Do something with the err
+    }
+    
+    // Otherwise do something with stmt
+    switch stmt := stmt.(type) {
+    case *sqlparser.Select:
+    	_ = stmt
+    case *sqlparser.Insert:
+    }
+}
+```
+
 See [parse_test.go](https://github.com/SananGuliyev/sqlparser/blob/master/parse_test.go) for more examples, or read the [godoc](https://godoc.org/github.com/SananGuliyev/sqlparser).
 
 

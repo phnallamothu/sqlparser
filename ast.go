@@ -29,6 +29,13 @@ import (
 	"github.com/SananGuliyev/sqlparser/dependency/sqltypes"
 )
 
+const (
+	SQLModeStandard = iota
+	SQLModeANSIQuotes
+)
+
+var SQLMode = SQLModeStandard
+
 // Instructions for creating new types: If a type
 // needs to satisfy an interface, declare that function
 // along with that interface. This will help users
@@ -46,7 +53,7 @@ import (
 // is partially parsed but still contains a syntax error, the
 // error is ignored and the DDL is returned anyway.
 func Parse(sql string) (Statement, error) {
-	tokenizer := NewStringTokenizer(sql)
+	tokenizer := NewStringTokenizer(sql, SQLMode)
 	if yyParse(tokenizer) != 0 {
 		if tokenizer.partialDDL != nil {
 			log.Printf("ignoring error parsing DDL '%s': %v", sql, tokenizer.LastError)
@@ -61,7 +68,7 @@ func Parse(sql string) (Statement, error) {
 // ParseStrictDDL is the same as Parse except it errors on
 // partially parsed DDL statements.
 func ParseStrictDDL(sql string) (Statement, error) {
-	tokenizer := NewStringTokenizer(sql)
+	tokenizer := NewStringTokenizer(sql, SQLMode)
 	if yyParse(tokenizer) != 0 {
 		return nil, tokenizer.LastError
 	}
@@ -97,7 +104,7 @@ func ParseNext(tokenizer *Tokenizer) (Statement, error) {
 // SplitStatement returns the first sql statement up to either a ; or EOF
 // and the remainder from the given buffer
 func SplitStatement(blob string) (string, string, error) {
-	tokenizer := NewStringTokenizer(blob)
+	tokenizer := NewStringTokenizer(blob, SQLMode)
 	tkn := 0
 	for {
 		tkn, _ = tokenizer.Scan()
@@ -118,7 +125,7 @@ func SplitStatement(blob string) (string, string, error) {
 // returns the sql pieces blob contains; or error if sql cannot be parsed
 func SplitStatementToPieces(blob string) (pieces []string, err error) {
 	pieces = make([]string, 0, 16)
-	tokenizer := NewStringTokenizer(blob)
+	tokenizer := NewStringTokenizer(blob, SQLMode)
 
 	tkn := 0
 	var stmt string
@@ -3430,6 +3437,12 @@ func Backtick(in string) string {
 }
 
 func formatID(buf *TrackedBuffer, original, lowered string) {
+	var identChar rune
+	if SQLMode == SQLModeANSIQuotes {
+		identChar = '"'
+	} else {
+		identChar = '`'
+	}
 	isDbSystemVariable := false
 	if len(original) > 1 && original[:2] == "@@" {
 		isDbSystemVariable = true
@@ -3449,14 +3462,14 @@ func formatID(buf *TrackedBuffer, original, lowered string) {
 	return
 
 mustEscape:
-	buf.WriteByte('`')
+	_, _ = buf.WriteRune(identChar)
 	for _, c := range original {
-		buf.WriteRune(c)
-		if c == '`' {
-			buf.WriteByte('`')
+		_, _ = buf.WriteRune(c)
+		if c == identChar {
+			_, _ = buf.WriteRune(identChar)
 		}
 	}
-	buf.WriteByte('`')
+	_, _ = buf.WriteRune(identChar)
 }
 
 func compliantName(in string) string {
