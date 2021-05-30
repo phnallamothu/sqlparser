@@ -195,8 +195,8 @@ func TestParseANSIQuotesMode(t *testing.T) {
 		in  string
 		out string
 	}{{
-		in:  `select * from "table"`,
-		out: `select * from "table"`,
+		in:  `select * from "table" where "column" = 'value'`,
+		out: `select * from "table" where "column" = 'value'`,
 	}, {
 		in:  `select * from "tbl"`,
 		out: `select * from tbl`,
@@ -210,9 +210,9 @@ func TestParseANSIQuotesMode(t *testing.T) {
 			continue
 		}
 
-		finalSQL := String(stmt)
-		if tcase.out != finalSQL {
-			t.Errorf("EndOfStatementPosition(%s) got sql \"%s\" want \"%s\"", tcase.in, finalSQL, tcase.out)
+		out := String(stmt)
+		if tcase.out != out {
+			t.Errorf("EndOfStatementPosition(%s) got sql \"%s\" want \"%s\"", tcase.in, out, tcase.out)
 		}
 	}
 	SQLMode = SQLModeStandard
