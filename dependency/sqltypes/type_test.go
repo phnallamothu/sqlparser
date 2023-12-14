@@ -19,7 +19,7 @@ package sqltypes
 import (
 	"testing"
 
-	"github.com/SananGuliyev/sqlparser/dependency/querypb"
+	"github.com/phnallamothu/sqlparser/dependency/querypb"
 )
 
 func TestTypeValues(t *testing.T) {

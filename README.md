@@ -1,8 +1,8 @@
 # SQL Parser 
 [![Build Status](https://img.shields.io/travis/com/SananGuliyev/sqlparser.svg)](https://travis-ci.com/SananGuliyev/sqlparser) 
 [![Codecov](https://img.shields.io/codecov/c/gh/SananGuliyev/sqlparser)](https://codecov.io/gh/SananGuliyev/sqlparser)
-[![Go Report Card](https://goreportcard.com/badge/github.com/SananGuliyev/sqlparser)](https://goreportcard.com/report/github.com/SananGuliyev/sqlparser)
-[![GoDoc](https://godoc.org/github.com/SananGuliyev/sqlparser?status.svg)](https://pkg.go.dev/github.com/SananGuliyev/sqlparser)
+[![Go Report Card](https://goreportcard.com/badge/github.com/phnallamothu/sqlparser)](https://goreportcard.com/report/github.com/phnallamothu/sqlparser)
+[![GoDoc](https://godoc.org/github.com/phnallamothu/sqlparser?status.svg)](https://pkg.go.dev/github.com/phnallamothu/sqlparser)
 
 Go package for parsing ANSI SQL queries
 
@@ -24,7 +24,7 @@ It applies the same LICENSE as `vitessio/vitess`.
 package main
 
 import (
-    "github.com/SananGuliyev/sqlparser"
+    "github.com/phnallamothu/sqlparser"
 )
 
 func main() {
@@ -49,7 +49,7 @@ Alternative to read many queries from a io.Reader:
 package main
 
 import (
-    "github.com/SananGuliyev/sqlparser"
+    "github.com/phnallamothu/sqlparser"
     "io"
     "strings"
 )
@@ -76,7 +76,7 @@ Treat `"` as an identifier quote character (like the \` quote character) and not
 package main
 
 import (
-    "github.com/SananGuliyev/sqlparser"
+    "github.com/phnallamothu/sqlparser"
 )
 
 func main() {
@@ -96,7 +96,7 @@ func main() {
 }
 ```
 
-See [parse_test.go](https://github.com/SananGuliyev/sqlparser/blob/master/parse_test.go) for more examples, or read the [godoc](https://godoc.org/github.com/SananGuliyev/sqlparser).
+See [parse_test.go](https://github.com/phnallamothu/sqlparser/blob/master/parse_test.go) for more examples, or read the [godoc](https://godoc.org/github.com/phnallamothu/sqlparser).
 
 
 ## Porting Instructions
@@ -108,7 +108,7 @@ You only need the below if you plan to try to keep this library up to date with 
 ```bash
 shopt -s nullglob
 VITESS=${GOPATH?}/src/vitess.io/vitess/go/
-SANANGULIYEV=${GOPATH?}/src/github.com/SananGuliyev/sqlparser/
+SANANGULIYEV=${GOPATH?}/src/github.com/phnallamothu/sqlparser/
 
 # Create patches for everything that changed
 LASTIMPORT=1b7879cb91f1dfe1a2dfa06fea96e951e3a7aec5
@@ -143,7 +143,7 @@ TODO: Change these instructions to use git to copy the files, that'll make later
 
 ```bash
 VITESS=${GOPATH?}/src/vitess.io/vitess/go/
-SANANGULIYEV=${GOPATH?}/src/github.com/SananGuliyev/sqlparser/
+SANANGULIYEV=${GOPATH?}/src/github.com/phnallamothu/sqlparser/
 
 cd ${SANANGULIYEV?}
 
@@ -159,8 +159,8 @@ rm dependency/sqltypes/arithmetic.go dependency/sqltypes/arithmetic_test.go depe
 # Some automated fixes
 
 # Fix imports
-sed -i '.bak' 's_vitess.io/vitess/go/vt/proto/query_github.com/SananGuliyev/sqlparser/dependency/querypb_g' *.go dependency/sqltypes/*.go
-sed -i '.bak' 's_vitess.io/vitess/go/_github.com/SananGuliyev/sqlparser/dependency/_g' *.go dependency/sqltypes/*.go
+sed -i '.bak' 's_vitess.io/vitess/go/vt/proto/query_github.com/phnallamothu/sqlparser/dependency/querypb_g' *.go dependency/sqltypes/*.go
+sed -i '.bak' 's_vitess.io/vitess/go/_github.com/phnallamothu/sqlparser/dependency/_g' *.go dependency/sqltypes/*.go
 
 # Copy the proto, but basically drop everything we don't want
 cp -pr ${VITESS?}/vt/proto/query dependency/querypb
@@ -182,7 +182,7 @@ sed -i '.bak' 's/vterrors.New([^,]*, /errors.New(/g' *.go dependency/sqltypes/*.
 
 ```bash
 VITESS=${GOPATH?}/src/vitess.io/vitess/go/
-SANANGULIYEV=${GOPATH?}/src/github.com/SananGuliyev/sqlparser/
+SANANGULIYEV=${GOPATH?}/src/github.com/phnallamothu/sqlparser/
 
 cd ${SANANGULIYEV?}
 

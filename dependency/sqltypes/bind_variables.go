@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/SananGuliyev/sqlparser/dependency/querypb"
+	"github.com/phnallamothu/sqlparser/dependency/querypb"
 )
 
 // NullBindVariable is a bindvar with NULL value.
